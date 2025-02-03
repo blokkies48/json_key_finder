@@ -1,0 +1,6 @@
+db*
+env
+__py*
+.env
+todo.txt
+pets*
