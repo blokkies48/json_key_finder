@@ -1,0 +1,33 @@
+.container-fluid {
+    background-color: #f8f9fa;
+    padding: 20px;
+  }
+  
+  .container {
+    max-width: 100%;
+  }
+  
+  .row {
+    height: 100%;
+  }
+  
+  .card {
+    border-radius: 10px;
+    overflow: hidden;
+    height: 100%;
+  }
+  
+  textarea {
+    resize: none;
+    border: none;
+    outline: none;
+  }
+  
+  .card-header {
+    font-size: 1.2rem;
+  }
+  
+  button {
+    font-weight: bold;
+  }
+  

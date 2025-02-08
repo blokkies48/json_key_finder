@@ -1,0 +1,53 @@
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
+  <div class="container h-100">
+    <div class="row h-100 g-4">
+      
+      <!-- JSON Input Column -->
+      <div class="col-lg-5 d-flex flex-column">
+        <div class="card shadow flex-grow-1 d-flex flex-column">
+          <div class="card-header bg-primary text-white fw-bold text-center">JSON Input</div>
+          <div class="card-body d-flex flex-column">
+            <textarea id="jsonInput" [(ngModel)]="jsonInput"  (input)="processData()" class="form-control flex-grow-1" placeholder="Enter JSON here..."></textarea>
+          </div>
+        </div> 
+      </div>
+
+      <!-- Key Search Column -->
+      <div class="col-lg-2 d-flex align-items-center">
+        <div class="card shadow w-100">
+          <div class="card-body text-center">
+            <label for="key" class="form-label fw-bold">Enter Key:</label>
+            <input type="text" id="key" [(ngModel)]="key" class="form-control mb-3 text-center">
+             <!-- Generated keys -->
+            <!-- <div class="container">
+              <h3>Select Keys to Include</h3>
+              <div *ngFor="let key of availableKeys">
+                <label>
+                  <input type="checkbox" [(ngModel)]="selectedKeys[key]" (change)="updateData()">
+                  {{ key }}
+                </label>
+              </div>
+            
+              <h3>Filtered Data</h3>
+              <pre>{{ filteredData | json }}</pre>
+            </div> -->
+            
+            <button (click)="processData()" class="btn btn-primary w-100">Find Key</button>
+            <button (click)="clearKey()" class="btn btn-warning w-100 mt-2">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output Column -->
+      <div class="col-lg-5 d-flex flex-column">
+        <div class="card shadow flex-grow-1 d-flex flex-column">
+          <div class="card-header bg-success text-white fw-bold text-center">Output</div>
+          <div class="card-body d-flex flex-column">
+            <textarea id="output" class="form-control flex-grow-1" [ngClass]="{'border-danger text-danger bg-light': isError}" [value]="output" readonly placeholder="Processed JSON output..."></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
