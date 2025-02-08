@@ -19,18 +19,14 @@
             <label for="key" class="form-label fw-bold">Enter Key:</label>
             <input type="text" id="key" [(ngModel)]="key" class="form-control mb-3 text-center">
              <!-- Generated keys -->
-            <!-- <div class="container">
-              <h3>Select Keys to Include</h3>
+            <div class="container">
               <div *ngFor="let key of availableKeys">
                 <label>
                   <input type="checkbox" [(ngModel)]="selectedKeys[key]" (change)="updateData()">
                   {{ key }}
                 </label>
               </div>
-            
-              <h3>Filtered Data</h3>
-              <pre>{{ filteredData | json }}</pre>
-            </div> -->
+            </div>
             
             <button (click)="processData()" class="btn btn-primary w-100">Find Key</button>
             <button (click)="clearKey()" class="btn btn-warning w-100 mt-2">Clear</button>
