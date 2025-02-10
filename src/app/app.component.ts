@@ -22,7 +22,10 @@ export class AppComponent {
   initializeKeys() {
     if (this.output.length > 0) {
       const jsonData = JSON.parse(this.output)
-      const firstUser = jsonData[0][0];
+      let firstUser = jsonData[0][0];
+      if (!firstUser) {
+        firstUser = jsonData[0]
+      }
       this.availableKeys = Object.keys(firstUser);
       if (this.availableKeys.includes("0")) {
         this.availableKeys = []
@@ -36,7 +39,14 @@ export class AppComponent {
   updateData() {
     const jsonData = JSON.parse(this.globalOutput)
     const filteredOutput: any = []
-    this.filteredData = jsonData[0].map((user: any) => {
+    let data: any[] = []
+    if (!Array.isArray(jsonData[0])) {
+      data = jsonData
+    } else { 
+      data = jsonData[0]
+    }
+    console.log(data)
+    this.filteredData = data.map((user: any) => {
       let filteredUser: any = {};
       this.availableKeys.forEach(key => {
         if (this.selectedKeys[key]) {

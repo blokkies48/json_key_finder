@@ -33,3 +33,8 @@
     font-weight: bold;
   }
   
+  .scrollable-container {
+    max-height: 40vh;  /* Set your desired max height here */
+    overflow-y: auto;   /* Enable vertical scrolling if content exceeds max height */
+    text-align: left;
+  }

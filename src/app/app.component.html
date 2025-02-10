@@ -19,7 +19,7 @@
             <label for="key" class="form-label fw-bold">Enter Key:</label>
             <input type="text" id="key" [(ngModel)]="key" class="form-control mb-3 text-center">
              <!-- Generated keys -->
-            <div class="container">
+            <div class="scrollable-container">
               <div *ngFor="let key of availableKeys">
                 <label>
                   <input type="checkbox" [(ngModel)]="selectedKeys[key]" (change)="updateData()">
