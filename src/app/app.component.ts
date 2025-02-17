@@ -133,6 +133,15 @@ export class AppComponent {
     return results;
   }
   
+  selectAll() {
+    this.availableKeys.forEach(key => this.selectedKeys[key] = true);
+    this.updateData();
+  }
+  
+  deselectAll() {
+    this.availableKeys.forEach(key => this.selectedKeys[key] = false);
+    this.updateData();
+  }
 
   clearKey() {
     this.key= '';

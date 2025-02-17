@@ -25,10 +25,16 @@
                   <input type="checkbox" [(ngModel)]="selectedKeys[key]" (change)="updateData()">
                   {{ key }}
                 </label>
+
               </div>
+
+            </div>
+            <div *ngIf="availableKeys.length > 0">
+              <button (click)="selectAll()" class="btn btn-success w-100">Select All</button>
+              <button (click)="deselectAll()" class="btn btn-info w-100 mt-2">Deselect All</button>
             </div>
             
-            <button (click)="processData()" class="btn btn-primary w-100">Find Key</button>
+            <button (click)="processData()" class="btn btn-primary w-100 mt-2">Find Key</button>
             <button (click)="clearKey()" class="btn btn-warning w-100 mt-2">Clear</button>
           </div>
         </div>
