@@ -45,7 +45,6 @@ export class AppComponent {
     } else { 
       data = jsonData[0]
     }
-    console.log(data)
     this.filteredData = data.map((user: any) => {
       let filteredUser: any = {};
       this.availableKeys.forEach(key => {
@@ -69,7 +68,7 @@ export class AppComponent {
         return
       }
       const results = this.searchForKey(jsonData, this.key);
-      if (results.includes('There once was a similar key zzz')) {
+      if (results.includes('-*-')) {
         results.pop();
         this.output = 'Key not found! Did you maybe mean?\n' + JSON.stringify(results, null, 2);
         this.isError = true;
@@ -126,7 +125,7 @@ export class AppComponent {
   
     // If no exact match is found, return similar keys
     if (results.length === 0 && similarKeys.length > 0) {
-      similarKeys.push('There once was a similar key zzz')
+      similarKeys.push('-*-')
       return similarKeys;
     }
   
