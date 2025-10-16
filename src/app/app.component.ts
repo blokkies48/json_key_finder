@@ -1,11 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
+
+declare const require: any; 
+declare var monaco: any;
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit{
   jsonInput: string = '';
   key: string = '';
   output: string = '';
@@ -18,26 +21,67 @@ export class AppComponent {
   selectedKeys: any = {};
   filteredData: any[] = [];
 
-    // Initialize available keys and set them all as selected initially
-  initializeKeys() {
-    if (this.output.length > 0) {
-      const jsonData = JSON.parse(this.output)
-      let firstUser = jsonData[0][0];
-      if (!firstUser) {
-        firstUser = jsonData[0]
+  editorInput: any;
+  editorOutput: any;
+
+  jsonTree = `<h1>HEST</h1>`
+
+  ngAfterViewInit() {
+    // wait until Monaco loader available
+    const check = setInterval(() => {
+      if ((window as any).require) {
+        clearInterval(check);
+        this.initMonaco();
       }
-      this.availableKeys = Object.keys(firstUser);
-      if (this.availableKeys.includes("0")) {
-        this.availableKeys = []
-      }
-      this.availableKeys.forEach(key => {
-        this.selectedKeys[key] = true; // All keys selected initially
-      });
-    }
+    }, 100);
   }
+
+  initMonaco() {
+    const monacoLoader = (window as any).require;
+    monacoLoader.config({
+      paths: { vs: 'https://unpkg.com/monaco-editor@0.47.0/min/vs' }
+    });
+
+    monacoLoader(['vs/editor/editor.main'], (monacoInstance: any) => {
+      // use monacoInstance inside callback, not global var
+      this.editorInput = monacoInstance.editor.create(document.getElementById('jsonEditor'), {
+        value: this.jsonInput,
+        language: 'json',
+        theme: 'light',
+        minimap: { enabled: false },
+        automaticLayout: true
+      });
+
+      this.editorOutput = monacoInstance.editor.create(document.getElementById('outputEditor'), {
+        value: '',
+        language: 'json',
+        readOnly: true,
+        theme: 'vs-light',
+        minimap: { enabled: false },
+        automaticLayout: true
+      });
+
+      this.editorInput.onDidChangeModelContent(() => this.processData());
+    });
+  }
+
+    // Initialize available keys and set them all as selected initially
+initializeKeys() {
+  if (!this.globalOutput) return;
+  const jsonData = JSON.parse(this.globalOutput);
+  let firstItem = Array.isArray(jsonData[0]) ? jsonData[0][0] || jsonData[0] : jsonData[0];
+  if (!firstItem || typeof firstItem !== 'object') return;
+
+  this.availableKeys = Object.keys(firstItem);
+  this.availableKeys.forEach(key => {
+    this.selectedKeys[key] = true; // All keys selected initially
+  });
+}
 
   updateData() {
     const jsonData = JSON.parse(this.globalOutput)
+
+    console.log("JsonData", jsonData)
     const filteredOutput: any = []
     let data: any[] = []
     if (!Array.isArray(jsonData[0])) {
@@ -45,93 +89,66 @@ export class AppComponent {
     } else { 
       data = jsonData[0]
     }
-    this.filteredData = data.map((user: any) => {
+    this.filteredData = data.map(user => {
       let filteredUser: any = {};
       this.availableKeys.forEach(key => {
-        if (this.selectedKeys[key]) {
-          filteredUser[key] = user[key]; // Include the key if selected
+        if (this.selectedKeys[key] && user.hasOwnProperty(key)) {
+          filteredUser[key] = user[key];
         }
       });
-      filteredOutput.push(filteredUser);
       return filteredUser;
     });
-    this.output = JSON.stringify([filteredOutput], null, 2);
+    this.output = JSON.stringify([this.filteredData], null, 2);
   }
   
-  processData() {
-    this.isError = false;
-    this.availableKeys = [];
-    try {
-      const jsonData = JSON.parse(this.jsonInput);
-      if (!this.key) {
-        this.output = JSON.stringify(jsonData, null, 2);
-        return
-      }
-      const results = this.searchForKey(jsonData, this.key);
-      if (results.includes('-*-')) {
-        results.pop();
-        this.output = 'Key not found! Did you maybe mean?\n' + JSON.stringify(results, null, 2);
-        this.isError = true;
-        return;
-      }
-      if (!results.length) {
-        this.output = 'Key not found!';
-        this.isError = true;
-        return;
-      }
+processData() {
+  this.isError = false;
+  this.availableKeys = [];
 
-      this.output = JSON.stringify(results, null, 2);
-      this.globalOutput = this.output;
-      this.isError = false;
-      try {
+  try {
+    const text = this.editorInput ? this.editorInput.getValue() : this.jsonInput;
+    const jsonData = JSON.parse(text);
+    this.output = JSON.stringify(jsonData, null, 2);
 
-        this.initializeKeys();
-      } catch {
 
-      }
-    } catch (error) {
-      console.error('Error parsing JSON:', error);
-      this.isError = true;
-      this.output = 'Invalid JSON!';
+    if (this.key) {
+      let filteredJson = this.getKeyValue(jsonData, this.key)
+      this.output = JSON.stringify(filteredJson, null, 2);
     }
+    this.editorOutput?.setValue(this.output);
+
+  } catch (error) {
+    this.isError = true;
+    this.output = `${error}`;
+    this.editorOutput?.setValue(this.output);
   }
-  searchForKey(obj: any, searchKey: string): any[] {
-    let results: any[] = [];
-    let similarKeys: string[] = []; // To store similar keys
-  
-    // Convert the searchKey to lowercase for case-insensitive comparison
-    const lowerSearchKey = searchKey.toLowerCase();
-  
-    function recursiveSearch(data: any) {
-      if (typeof data === 'object' && data !== null) {
-        for (const key in data) {
-          // Convert the key to lowercase for comparison
-          if (key.toLowerCase() === lowerSearchKey) {
-            results.push(data[key]);
-          }
-  
-          // Check for similar keys using substring matching
-          if (key.toLowerCase().includes(lowerSearchKey) && !similarKeys.includes(key)) {
-            similarKeys.push(key);  // Add similar key to the list
-          }
-          recursiveSearch(data[key]);
+}
+
+createTree (data: JSON): string {
+  return `<h1>HEST</h1>`
+}
+
+  getKeyValue(data: { [key: string]: any }, search: string): { [key: string]: any } {
+    for (const key in data) {
+      if (data.hasOwnProperty(key)) {
+        if (key.toLowerCase() === search.toLowerCase()) {
+          return { [key]: data[key] }; // return as JSON object
         }
-      } else if (Array.isArray(data)) {
-        data.forEach(item => recursiveSearch(item));
+        if (typeof data[key] === 'object' && data[key] !== null) {
+          let valueList = []
+          for (const key2 in data[key]) {
+            if (data[key].hasOwnProperty(key2)) {
+              valueList.push(data[key][key2][search])
+            }
+          }
+          return {[search] : valueList} // return found JSON
+        }
       }
     }
-  
-    recursiveSearch(obj);
-  
-    // If no exact match is found, return similar keys
-    if (results.length === 0 && similarKeys.length > 0) {
-      similarKeys.push('-*-')
-      return similarKeys;
-    }
-  
-    return results;
+    return {}; // not found, return empty object
   }
-  
+
+
   selectAll() {
     this.availableKeys.forEach(key => this.selectedKeys[key] = true);
     this.updateData();
