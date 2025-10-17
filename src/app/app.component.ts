@@ -37,7 +37,7 @@ export class AppComponent implements OnInit, AfterViewInit {  // Add OnInit
       this.jsonInput = savedJson;
     }
     if (setKey) {
-      this.key = setKey;  // This will bind to the input field via ngModel
+      this.key = setKey; 
     }
   }
 
@@ -75,10 +75,9 @@ export class AppComponent implements OnInit, AfterViewInit {  // Add OnInit
         automaticLayout: true
       });
 
-      // Apply loaded JSON to editor and process (respects loaded this.key)
       if (this.jsonInput) {
         this.editorInput.setValue(this.jsonInput);
-        this.processData();  // This will use this.key if loaded
+        this.processData(); 
       }
 
       // Auto-process on input changes
