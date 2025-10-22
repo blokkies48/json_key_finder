@@ -1,3 +1,4 @@
+import { Expansion } from '@angular/compiler';
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';  // Import if using ngModel (add to NgModule or standalone imports)
 
@@ -25,7 +26,7 @@ export class AppComponent implements OnInit, AfterViewInit {  // Add OnInit
 
   editorInput: any;
   editorOutput: any;
-
+  showFix = false;
   jsonTree = `<h1>HEST</h1>`
 
   ngOnInit(): void {
@@ -134,7 +135,12 @@ export class AppComponent implements OnInit, AfterViewInit {  // Add OnInit
 
       if (this.key) {
         let filteredJson = this.getKeyValue(jsonData, this.key)
-        this.output = JSON.stringify(filteredJson, null, 2);
+        if (filteredJson && Object.keys(filteredJson).length === 0) {
+          this.output = "No data found";
+        }
+        else {
+          this.output = JSON.stringify(filteredJson, null, 2);
+        }
         localStorage.setItem('setKey', this.key);  // Save key every time it's used
       } else {
         localStorage.removeItem('setKey');  // Clear if empty
@@ -142,6 +148,7 @@ export class AppComponent implements OnInit, AfterViewInit {  // Add OnInit
       this.editorOutput?.setValue(this.output);
 
     } catch (error) {
+      this.showFix = true
       this.isError = true;
       this.output = `${error}`;
       this.editorOutput?.setValue(this.output);
@@ -162,10 +169,14 @@ export class AppComponent implements OnInit, AfterViewInit {  // Add OnInit
           let valueList = []
           for (const key2 in data[key]) {
             if (data[key].hasOwnProperty(key2)) {
-              valueList.push(data[key][key2][search])
+              if (data[key][key2][search]) {
+                valueList.push(data[key][key2][search])
+              }
             }
           }
-          return {[search] : valueList} // return found JSON
+          if (valueList.length !== 0) {
+            return {[search] : valueList} // return found JSON
+          }
         }
       }
     }
