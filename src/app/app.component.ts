@@ -112,8 +112,6 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
 
     updateData() {
         const jsonData = JSON.parse(this.globalOutput)
-
-        console.log("JsonData", jsonData)
         const filteredOutput: any = []
         let data: any[] = []
         if (!Array.isArray(jsonData[0])) {
@@ -219,7 +217,6 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
       try {
         
         let text = this.editorInput ? this.editorInput.getValue() : this.jsonInput;
-          console.log('text', text)
           text = text.replace(/'/g, '"');
           text = text.replace(/\bTrue\b/g, 'true');
           text = text.replace(/\bFalse\b/g, 'false');
