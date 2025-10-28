@@ -82,7 +82,7 @@ export class AppComponent implements OnInit, AfterViewInit {  // Add OnInit
       }
 
       // Auto-process on input changes
-      this.editorInput.onDidChangeModelContent(() => this.processData());
+      // this.editorInput.onDidChangeModelContent(() => this.processData());
     });
   }
 
@@ -128,13 +128,20 @@ export class AppComponent implements OnInit, AfterViewInit {  // Add OnInit
 
     try {
       const text = this.editorInput ? this.editorInput.getValue() : this.jsonInput;
+
+      if (!text) {
+        this.editorOutput?.setValue('')
+        this.key = ''
+        localStorage.setItem('savedJson', '');  // Save raw input
+        return
+      }
       const jsonData = JSON.parse(text);
       this.output = JSON.stringify(jsonData, null, 2);
 
       localStorage.setItem('savedJson', text);  // Save raw input
 
       if (this.key) {
-        let filteredJson = this.getKeyValue(jsonData, this.key)
+        let filteredJson = this.getKeyValueDynamic(jsonData, this.key)
         if (filteredJson && Object.keys(filteredJson).length === 0) {
           this.output = "No data found";
         }
@@ -148,7 +155,6 @@ export class AppComponent implements OnInit, AfterViewInit {  // Add OnInit
       this.editorOutput?.setValue(this.output);
 
     } catch (error) {
-      this.showFix = true
       this.isError = true;
       this.output = `${error}`;
       this.editorOutput?.setValue(this.output);
@@ -159,29 +165,38 @@ export class AppComponent implements OnInit, AfterViewInit {  // Add OnInit
     return `<h1>HEST</h1>`
   }
 
-  getKeyValue(data: { [key: string]: any }, search: string): { [key: string]: any } {
-    for (const key in data) {
-      if (data.hasOwnProperty(key)) {
-        if (key.toLowerCase() === search.toLowerCase()) {
-          return { [key]: data[key] }; // return as JSON object
-        }
-        if (typeof data[key] === 'object' && data[key] !== null) {
-          let valueList = []
-          for (const key2 in data[key]) {
-            if (data[key].hasOwnProperty(key2)) {
-              if (data[key][key2][search]) {
-                valueList.push(data[key][key2][search])
-              }
-            }
-          }
-          if (valueList.length !== 0) {
-            return {[search] : valueList} // return found JSON
-          }
-        }
+getKeyValueDynamic(data: any, search: string): { [key: string]: any } {
+  let results: any[] = [];
+
+  function dig(obj: any) {
+    if (typeof obj !== 'object' || obj === null) return;
+
+    for (const key in obj) {
+      if (!obj.hasOwnProperty(key)) continue;
+
+      const value = obj[key];
+
+      if (key.toLowerCase() === search.toLowerCase()) {
+        results.push(value);
+      }
+
+      if (typeof value === 'object' && value !== null) {
+        dig(value);
       }
     }
-    return {}; // not found, return empty object
   }
+
+  dig(data);
+
+  if (results.length === 0) {
+    return {}; // nothing found
+  } else if (results.length === 1) {
+    return { [search]: results[0] }; // only one, return single
+  } else {
+    return { [search]: results }; // multiple, return list
+  }
+}
+
 
   selectAll() {
     this.availableKeys.forEach(key => this.selectedKeys[key] = true);

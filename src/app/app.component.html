@@ -22,7 +22,23 @@
           </div>
           <div class="card-body text-center">
             <label for="key" class="form-label fw-bold">Enter Key</label>
-            <input type="text" id="key" [(ngModel)]="key" class="form-control mb-3 text-center shadow-sm" value="{{key}}">
+<div class="input-group mb-3 shadow-sm rounded">
+  <input
+    type="text"
+    id="key"
+    [(ngModel)]="key"
+    class="form-control text-center"
+    placeholder="Enter key..."
+  >
+  <button
+    class="btn btn-outline-secondary"
+    type="button"
+    (click)="key = ''"
+    title="Clear"
+  >
+    ✕
+  </button>
+</div>
 
             <div class="scrollable-container border rounded p-2 mb-3" style="max-height: 250px; overflow-y: auto;">
               <div *ngFor="let key of availableKeys" class="text-start">
@@ -38,13 +54,16 @@
               <button (click)="deselectAll()" class="btn btn-outline-info btn-sm">Deselect All</button>
             </div>
 
+
+
             <hr>
-            <!-- <div *ngIf="showFix"> 
-              <button (click)="deselectAll()" class="btn btn-outline-info btn-sm">Fix Structure</button>
-            </div> -->
+            <div > 
+            </div>
             <div class="d-grid gap-2">
-              <button (click)="processData()" class="btn btn-primary fw-bold">Find Key</button>
-              <button (click)="clearKey()" class="btn btn-warning fw-bold">Clear</button>
+              <!-- <button *ngIf="isError" (click)="deselectAll()" class="btn btn-outline-info btn-sm">Fix Structure</button> -->
+              <button (click)="processData()" class="btn btn-primary fw-bold">Process</button>
+              <!-- <button (click)="processData()" class="btn btn-primary fw-bold">Find Key</button> -->
+              <!-- <button (click)="clearKey()" class="btn btn-warning fw-bold">Clear</button> -->
             </div>
           </div>
 
