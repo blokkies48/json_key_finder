@@ -1,86 +1,76 @@
-<div class="container min-vh-100 d-flex align-items-center justify-content-center bg-grey">
-   <div class="container p-2">
-      <div class="row g-3">
-         <!-- JSON Input -->
-         <div class="col-lg-5 d-flex flex-column">
-            <div class="card shadow-lg border-0 flex-grow-1">
-               <div class="card-header bg-primary text-white text-center fw-bold fs-5 rounded-top">
-                  JSON Input
-               </div>
-               <div class="card-body p-0">
-                  <div id="jsonEditor" class="border-0 rounded-bottom" style="height: 70vh;"></div>
-               </div>
-            </div>
-         </div>
-         <!-- Middle Column -->
-         <div class="col-lg-2 d-flex flex-column justify-content-between">
-            <div class="card shadow-lg border-0 flex-grow-1">
-               <div class="card-header bg-dark text-white text-center fw-bold fs-5 rounded-top">
-                  Search
-               </div>
-               <div class="card-body text-center">
-                  <label for="key" class="form-label fw-bold">Enter Key</label>
-                  <div class="input-group mb-3 shadow-sm rounded">
-                     <input
-                     type="text"
-                     id="key"
-                     [(ngModel)]="key"
-                     class="form-control text-center"
-                     placeholder="Enter key..."
-                     (keyup.enter)="processData()"
-                     />
-                     <button
-                        class="btn btn-outline-secondary"
-                        type="button"
-                        (click)="key = ''"
-                        title="Clear"
-                        >
-                     ✕
-                     </button>
-                  </div>
-                  <div class="scrollable-container border rounded p-2 mb-3" style="max-height: 250px; overflow-y: auto;">
-                     <div *ngFor="let key of availableKeys" class="text-start">
-                        <label class="d-block small">
-                        <input type="checkbox" [(ngModel)]="selectedKeys[key]" (change)="updateData()">
-                        {{ key }}
-                        </label>
-                     </div>
-                  </div>
-                  <div *ngIf="availableKeys.length > 0" class="d-grid gap-2">
-                     <button (click)="selectAll()" class="btn btn-success btn-sm">Select All</button>
-                     <button (click)="deselectAll()" class="btn btn-outline-info btn-sm">Deselect All</button>
-                  </div>
-                  <hr>
-                  <div > 
-                  </div>
-                  <div class="d-grid gap-2">
-                     <button *ngIf="isError" (click)="fixStructure()" class="btn btn-outline-info btn-sm">Try Fix Structure</button>
-                     <button (click)="processData()" class="btn btn-primary fw-bold">Process</button>
-                     <!-- <button (click)="processData()" class="btn btn-primary fw-bold">Find Key</button> -->
-                     <!-- <button (click)="clearKey()" class="btn btn-warning fw-bold">Clear</button> -->
-                  </div>
-               </div>
-               <div class="card-footer text-center bg-light">
-                  <a href="https://github.com/blokkies48/json_key_finder" target="_blank" class="text-dark">
-                     <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2C6.477 2 2 6.477...z"/>
-                     </svg>
-                     <span class="d-block small mt-1">GitHub</span>
-                  </a>
-               </div>
-            </div>
-         </div>
-         <!-- Output -->
-         <div class="col-lg-5 d-flex flex-column">
-            <div class="card shadow-lg border-0 flex-grow-1">
-               <div class="card-header bg-success text-white text-center fw-bold fs-5 rounded-top">
-                  Output
-               </div>
-               <div class="card-body p-0">
-                  <div id="outputEditor" class="border-0 rounded-bottom" style="height: 70vh;"></div>
-               </div>
-            </div>
-         </div>
+<div class="container-fluid min-vh-100 d-flex align-items-stretch bg-grey p-2">
+  <div class="row flex-grow-1 g-2 w-100">
+    <!-- JSON Input -->
+    <div class="col-lg-5 d-flex flex-column">
+      <div class="card shadow-sm border-0 flex-grow-1">
+        <div class="card-header bg-primary text-white text-center fw-bold fs-5 py-2">
+          JSON Input
+        </div>
+        <div class="card-body p-0 flex-grow-1">
+          <div id="jsonEditor" class="border-0 rounded-bottom" style="height: calc(100vh - 110px);"></div>
+        </div>
       </div>
-   </div>
+    </div>
+
+    <!-- Middle Column -->
+    <div class="col-lg-2 d-flex flex-column">
+      <div class="card shadow-sm border-0 flex-grow-1">
+        <div class="card-header bg-dark text-white text-center fw-bold fs-5 py-2">
+          Search
+        </div>
+        <div class="card-body p-2 text-center d-flex flex-column overflow-auto">
+          <label for="key" class="form-label fw-bold small mb-1">Enter Key</label>
+          <div class="input-group input-group-sm mb-2">
+            <input
+              type="text"
+              id="key"
+              [(ngModel)]="key"
+              class="form-control text-center"
+              placeholder="Enter key..."
+              (keyup.enter)="processData()"
+            />
+            <button class="btn btn-outline-secondary" type="button" (click)="key = ''" title="Clear">✕</button>
+          </div>
+
+          <div class="scrollable-container border rounded p-1 mb-2 flex-grow-1 overflow-auto">
+            <div *ngFor="let key of availableKeys" class="text-start small">
+              <label class="d-block">
+                <input type="checkbox" [checked]="true" [(ngModel)]="selectedKeys[key]" (change)="updateData()"> {{ key }}
+              </label>
+            </div>
+          </div>
+
+          <div *ngIf="availableKeys.length > 0" class="d-grid gap-1 mb-2">
+            <button (click)="selectAll()" class="btn btn-success btn-sm">Select All</button>
+            <button (click)="deselectAll()" class="btn btn-outline-info btn-sm">Deselect All</button>
+          </div>
+
+          <div class="d-grid gap-1 mt-auto">
+            <button *ngIf="isError" (click)="fixStructure()" class="btn btn-outline-info btn-sm">Fix Structure</button>
+            <button (click)="processData()" class="btn btn-primary btn-sm fw-bold">Process</button>
+          </div>
+        </div>
+        <div class="card-footer text-center bg-light py-2">
+          <a href="https://github.com/blokkies48/json_key_finder" target="_blank" class="text-dark small">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="mb-1">
+              <path d="M12 2C6.477 2 2 6.477...z"/>
+            </svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="col-lg-5 d-flex flex-column">
+      <div class="card shadow-sm border-0 flex-grow-1">
+        <div class="card-header bg-success text-white text-center fw-bold fs-5 py-2">
+          Output
+        </div>
+        <div class="card-body p-0 flex-grow-1">
+          <div id="outputEditor" class="border-0 rounded-bottom" style="height: calc(100vh - 110px);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

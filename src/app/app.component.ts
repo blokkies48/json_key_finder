@@ -45,6 +45,7 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
         if (setKey) {
             this.key = setKey;
         }
+        this.processData()
     }
 
     ngAfterViewInit() {
@@ -111,7 +112,8 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
     }
 
     updateData() {
-        const jsonData = JSON.parse(this.globalOutput)
+        this.filteredData = []
+        const jsonData = JSON.parse(this.editorInput.getValue())[this.key]
         const filteredOutput: any = []
         let data: any[] = []
         if (!Array.isArray(jsonData[0])) {
@@ -122,13 +124,16 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
         this.filteredData = data.map(user => {
             let filteredUser: any = {};
             this.availableKeys.forEach(key => {
-                if (this.selectedKeys[key] && user.hasOwnProperty(key)) {
+                if (this.selectedKeys[key]) {
                     filteredUser[key] = user[key];
                 }
             });
             return filteredUser;
         });
-        this.output = JSON.stringify([this.filteredData], null, 2);
+        const newOutput = {
+            [this.key]: this.filteredData
+        };
+        this.editorOutput?.setValue(JSON.stringify(newOutput, null, 2));
     }
 
     processData() {
@@ -148,13 +153,28 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
             this.output = JSON.stringify(jsonData, null, 2);
 
             localStorage.setItem('savedJson', text); // Save raw input
-
             if (this.key) {
                 let filteredJson = this.getKeyValueDynamic(jsonData, this.key)
+
                 if (filteredJson && Object.keys(filteredJson).length === 0) {
                     this.output = "No data found";
                 } else {
                     this.output = JSON.stringify(filteredJson, null, 2);
+                    try {
+                        if (Array.isArray(filteredJson[this.key])) {
+                            for (let key in filteredJson[this.key]) {
+                                const item = filteredJson[this.key][key];
+                                for (let availableKey in item) {
+                                    if (!this.availableKeys.includes(availableKey)) {
+                                        this.availableKeys.push(availableKey)
+                                    }
+                                }
+                            }
+                            this.selectAll()
+                        }
+                    } catch {
+                        this.availableKeys = []
+                    }
                 }
                 localStorage.setItem('setKey', this.key); // Save key every time it's used
             } else {
