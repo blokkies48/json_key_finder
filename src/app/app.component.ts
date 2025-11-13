@@ -111,10 +111,21 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
         });
     }
 
+    filterKey(filteredJson: any, key: string) {
+        const keyLower = key.toLowerCase();
+
+        const matchKey = Object.keys(filteredJson).find(
+            k => k.toLowerCase() === keyLower
+        );
+
+        return matchKey ? filteredJson[matchKey] : undefined;
+    }
+
     updateData() {
         this.filteredData = []
-        const jsonData = JSON.parse(this.editorInput.getValue())[this.key]
-        const filteredOutput: any = []
+        // const jsonData = JSON.parse(this.editorInput.getValue())[this.key]
+        const jsonData = this.filterKey(JSON.parse(this.editorInput?.getValue()), this.key)
+        
         let data: any[] = []
         if (!Array.isArray(jsonData[0])) {
             data = jsonData
@@ -157,13 +168,22 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
                 let filteredJson = this.getKeyValueDynamic(jsonData, this.key)
 
                 if (filteredJson && Object.keys(filteredJson).length === 0) {
-                    this.output = "No data found";
+
+                    let wrongOutput = 'No data found'
+                    const similarKeys = this.findSimilarKeys(jsonData, this.key)
+                    if (similarKeys.length > 0) {
+                        this.output = JSON.stringify({'Did you maybe mean': similarKeys}, null, 2);
+                    } else {
+                        this.output = wrongOutput
+                    }
                 } else {
                     this.output = JSON.stringify(filteredJson, null, 2);
                     try {
-                        if (Array.isArray(filteredJson[this.key])) {
-                            for (let key in filteredJson[this.key]) {
-                                const item = filteredJson[this.key][key];
+
+                        const value = this.filterKey(filteredJson, this.key)
+                        if (Array.isArray(value)) {
+                            for (let key in value) {
+                                const item = value[key];
                                 for (let availableKey in item) {
                                     if (!this.availableKeys.includes(availableKey)) {
                                         this.availableKeys.push(availableKey)
@@ -172,7 +192,8 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
                             }
                             this.selectAll()
                         }
-                    } catch {
+                    } catch (e){
+                        console.log('err', e)
                         this.availableKeys = []
                     }
                 }
@@ -197,6 +218,7 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
         [key: string]: any
     } {
         let results: any[] = [];
+        let returnKey = search; 
 
         function dig(obj: any) {
             if (typeof obj !== 'object' || obj === null) return;
@@ -208,6 +230,7 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
 
                 if (key.toLowerCase() === search.toLowerCase()) {
                     results.push(value);
+                    returnKey = key
                 }
 
                 if (typeof value === 'object' && value !== null) {
@@ -222,11 +245,11 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
             return {}; // nothing found
         } else if (results.length === 1) {
             return {
-                [search]: results[0]
+                [returnKey]: results[0]
             }; // only one, return single
         } else {
             return {
-                [search]: results
+                [returnKey]: results
             }; // multiple, return list
         }
     }
@@ -269,6 +292,37 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
         }
     }
 
+    findSimilarKeys(obj: any, search: string): string[] {
+    const keys = Object.keys(obj);
+    search = search.toLowerCase();
+
+        return keys.filter(k => {
+            const keyLower = k.toLowerCase();
+
+            const partial = keyLower.includes(search);
+            const levenshtein = this.getLevenshteinDistance(keyLower, search);
+
+            return partial || levenshtein <= 5;
+        });
+    }
+
+    getLevenshteinDistance(a: string, b: string): number {
+        const dp = Array.from({ length: a.length + 1 }, (_, i) => Array(b.length + 1).fill(0));
+        for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+        for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+
+        for (let i = 1; i <= a.length; i++) {
+            for (let j = 1; j <= b.length; j++) {
+            const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+            dp[i][j] = Math.min(
+                dp[i - 1][j] + 1,       // deletion
+                dp[i][j - 1] + 1,       // insertion
+                dp[i - 1][j - 1] + cost // substitution
+            );
+            }
+        }
+        return dp[a.length][b.length];
+    }
 
     selectAll() {
         this.availableKeys.forEach(key => this.selectedKeys[key] = true);
