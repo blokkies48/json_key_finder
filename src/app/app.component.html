@@ -3,9 +3,16 @@
     <!-- JSON Input -->
     <div class="col-lg-5 d-flex flex-column">
       <div class="card shadow-sm border-0 flex-grow-1">
-        <div class="card-header bg-primary text-white text-center fw-bold fs-5 py-2">
-          JSON Input
-        </div>
+      <div class="card-header bg-primary text-white text-center fw-bold fs-5 py-2 position-relative">
+        JSON Input
+
+        <button 
+          class="btn btn-light btn-sm position-absolute top-0 end-0 m-1"
+          (click)="formatJson()">
+          Format
+        </button>
+      </div>
+
         <div class="card-body p-0 flex-grow-1">
           <div id="jsonEditor" class="border-0 rounded-bottom" style="height: calc(100vh - 110px);"></div>
         </div>
@@ -19,6 +26,10 @@
           Search
         </div>
         <div class="card-body p-2 text-center d-flex flex-column overflow-auto">
+          <h4>JSON key finder</h4>
+          <p>Filter and explore JSON data easily </p>
+          <hr>
+
           <label for="key" class="form-label fw-bold small mb-1">Enter Key</label>
           <div class="input-group input-group-sm mb-2">
             <input

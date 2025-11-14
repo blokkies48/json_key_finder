@@ -340,4 +340,12 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
         this.availableKeys = [];
         this.processData(); // Re-process without key
     }
+
+
+    formatJson() {
+        let input = JSON.parse(this.editorInput?.getValue())
+        this.editorInput?.setValue(JSON.stringify(input, null, 2));
+        localStorage.setItem('savedJson', JSON.stringify(input, null, 2))
+
+    }
 }
