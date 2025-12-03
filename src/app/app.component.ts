@@ -34,13 +34,19 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
     showFix = false;
     jsonTree = `<h1>HEST</h1>`
 
+    showHistory = false;
+    savedData: any[] = []
+
     ngOnInit(): void {
         // Load early, before view/editor init
         const savedJson = localStorage.getItem('savedJson');
         const setKey = localStorage.getItem('setKey');
-
+        
+        
         if (savedJson) {
-            this.jsonInput = savedJson;
+            this.savedData = JSON.parse(savedJson)
+            const parsed = this.savedData[0];
+            this.jsonInput = JSON.stringify(parsed, null, 2)
         }
         if (setKey) {
             this.key = setKey;
@@ -147,7 +153,7 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
         this.editorOutput?.setValue(JSON.stringify(newOutput, null, 2));
     }
 
-    processData() {
+    processData(saveData = false) {
         this.isError = false;
         this.availableKeys = [];
 
@@ -157,13 +163,17 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
             if (!text) {
                 this.editorOutput?.setValue('')
                 this.key = ''
-                localStorage.setItem('savedJson', ''); // Save raw input
                 return
             }
+
+            
             const jsonData = JSON.parse(text);
+            const savedJson = localStorage.getItem('savedJson');
+            if (savedJson) this.savedData = JSON.parse(savedJson)
+            this.savedData.unshift(jsonData)
             this.output = JSON.stringify(jsonData, null, 2);
 
-            localStorage.setItem('savedJson', text); // Save raw input
+            if (saveData) localStorage.setItem('savedJson', JSON.stringify(this.savedData));
             if (this.key) {
                 let filteredJson = this.getKeyValueDynamic(jsonData, this.key)
 
@@ -341,11 +351,12 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
         this.processData(); // Re-process without key
     }
 
-
     formatJson() {
         let input = JSON.parse(this.editorInput?.getValue())
         this.editorInput?.setValue(JSON.stringify(input, null, 2));
-        localStorage.setItem('savedJson', JSON.stringify(input, null, 2))
-
+        if (this.savedData.length === 0) {
+            this.savedData.unshift(input)
+        }
+        localStorage.setItem('savedJson',  JSON.stringify(this.savedData))
     }
 }

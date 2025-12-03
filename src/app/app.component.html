@@ -3,14 +3,23 @@
     <!-- JSON Input -->
     <div class="col-lg-5 d-flex flex-column">
       <div class="card shadow-sm border-0 flex-grow-1">
-      <div class="card-header bg-primary text-white text-center fw-bold fs-5 py-2 position-relative">
-        JSON Input
+      <div class="card-header bg-primary text-white fw-bold fs-5 py-2 d-flex align-items-center justify-content-between">
 
-        <button 
-          class="btn btn-light btn-sm position-absolute top-0 end-0 m-1"
-          (click)="formatJson()">
+        <!-- Left side -->
+        <button class="btn btn-light btn-sm" (click)="showHistory = true">
+          History
+        </button>
+
+        <!-- Middle title -->
+        <span class="flex-grow-1 text-center">
+          JSON Input
+        </span>
+
+        <!-- Right side -->
+        <button class="btn btn-light btn-sm" (click)="formatJson()">
           Format
         </button>
+
       </div>
 
         <div class="card-body p-0 flex-grow-1">
@@ -28,6 +37,8 @@
         <div class="card-body p-2 text-center d-flex flex-column overflow-auto">
           <h4>JSON key finder</h4>
           <p>Filter and explore JSON data easily </p>
+
+          <button (click)="processData(true)" class="btn btn-primary fw-bold">Process</button>
           <hr>
 
           <label for="key" class="form-label fw-bold small mb-1">Enter Key</label>
@@ -58,7 +69,6 @@
 
           <div class="d-grid gap-1 mt-auto">
             <button *ngIf="isError" (click)="fixStructure()" class="btn btn-outline-info btn-sm">Fix Structure</button>
-            <button (click)="processData()" class="btn btn-primary btn-sm fw-bold">Process</button>
           </div>
         </div>
 
@@ -78,3 +88,9 @@
     </div>
   </div>
 </div>
+
+
+        <app-history
+          *ngIf="showHistory"
+          (closeMe)="showHistory = false">
+        </app-history>

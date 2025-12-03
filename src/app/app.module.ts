@@ -4,11 +4,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { FormsModule } from '@angular/forms'; // Import FormsModule
+import { FormsModule } from '@angular/forms';
+import { HistoryComponent } from './components/history/history.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HistoryComponent,
   ],
   imports: [
     BrowserModule,
