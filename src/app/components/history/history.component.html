@@ -1,6 +1,15 @@
 <div class="popup-backdrop">
   <div class="popup-box">
-    <h2>Me Popup!</h2>
-    <button class="btn btn-secondary btn-sm m-1" (click)="close()">Close</button>
+  <h3>History</h3>
+
+    <ul class="history-list">
+      <li class="history-item"
+          *ngFor="let item of savedList"
+          (click)="pick(item)">
+        {{ getPreview(item) }}
+      </li>
+    </ul>
+<br>
+  <button class="btn btn-secondary" (click)="close()">Close</button>
   </div>
 </div>

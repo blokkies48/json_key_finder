@@ -359,4 +359,17 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
         }
         localStorage.setItem('savedJson',  JSON.stringify(this.savedData))
     }
+
+    loadJson(item: any) {
+        this.showHistory = false
+        this.editorInput?.setValue(JSON.stringify(item, null, 2));
+    }
+
+    openHistory() {
+    this.showHistory = true;
+    }
+
+    closeHistory() {
+    this.showHistory = false;
+    }
 }

@@ -6,9 +6,10 @@
       <div class="card-header bg-primary text-white fw-bold fs-5 py-2 d-flex align-items-center justify-content-between">
 
         <!-- Left side -->
-        <button class="btn btn-light btn-sm" (click)="showHistory = true">
-          History
-        </button>
+      <button class="btn btn-light btn-sm" (click)="openHistory()">
+        History
+      </button>
+
 
         <!-- Middle title -->
         <span class="flex-grow-1 text-center">
@@ -89,8 +90,5 @@
   </div>
 </div>
 
+<app-history *ngIf="showHistory" (closed)="closeHistory()" (selectItem)="loadJson($event)"></app-history>
 
-        <app-history
-          *ngIf="showHistory"
-          (closeMe)="showHistory = false">
-        </app-history>
