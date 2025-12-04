@@ -90,5 +90,5 @@
   </div>
 </div>
 
-<app-history *ngIf="showHistory" (closed)="closeHistory()" (selectItem)="loadJson($event)"></app-history>
+<app-history *ngIf="showHistory" (close)="closeHistory()" (clearHis)="clearHistory()" (selectItem)="loadJson($event)"></app-history>
 

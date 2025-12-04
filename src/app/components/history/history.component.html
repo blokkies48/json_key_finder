@@ -2,14 +2,31 @@
   <div class="popup-box">
   <h3>History</h3>
 
-    <ul class="history-list">
-      <li class="history-item"
-          *ngFor="let item of savedList"
-          (click)="pick(item)">
-        {{ getPreview(item) }}
-      </li>
-    </ul>
+<ul class="history-list" *ngIf="savedList.length > 0; else noDataBlock">
+  <li class="history-item"
+      *ngFor="let item of savedList"
+      (click)="pick(item)">
+    <pre class="json-preview">{{ getJsonPreview(item) }}</pre>
+  </li>
+</ul>
+
+<ng-template #noDataBlock>
+  <p class="no-data">No data...</p>
+</ng-template>
+
 <br>
-  <button class="btn btn-secondary" (click)="close()">Close</button>
+  <button class="btn btn-warning m-1" (click)="clearHistory()">Clear</button>
+  <button class="btn btn-secondary m-1" (click)="closeHistory()">Close</button>
   </div>
 </div>
+
+<div class="confirm-backdrop" *ngIf="showConfirm">
+  <div class="confirm-box">
+    <h4>Clear all?</h4>
+    <p>You sure you want smash all history?</p>
+
+    <button class="btn btn-danger m-1" (click)="confirmClear()">Yes</button>
+    <button class="btn btn-secondary m-1" (click)="cancelClear()">No</button>
+  </div>
+</div>
+

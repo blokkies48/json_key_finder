@@ -2,7 +2,8 @@
 import {
     Component,
     AfterViewInit,
-    OnInit
+    OnInit,
+    ChangeDetectorRef
 } from '@angular/core';
 
 import dirtyJSON from 'dirty-json';
@@ -36,6 +37,8 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
 
     showHistory = false;
     savedData: any[] = []
+
+    constructor(private cd: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         // Load early, before view/editor init
@@ -363,13 +366,27 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
     loadJson(item: any) {
         this.showHistory = false
         this.editorInput?.setValue(JSON.stringify(item, null, 2));
+        console.log('saved data', this.savedData, item)
+        const target = JSON.stringify(item);
+
+        this.savedData = this.savedData.filter(x =>
+            JSON.stringify(x) !== target
+        );
+        console.log('saved data', this.savedData)
+        localStorage.setItem('savedJson',  JSON.stringify(this.savedData))
+        this.processData(true)
     }
 
     openHistory() {
-    this.showHistory = true;
+        this.showHistory = true;
     }
 
     closeHistory() {
-    this.showHistory = false;
+        this.showHistory = false;
+    }
+
+    clearHistory() {
+        this.editorOutput?.setValue('')
+        this.savedData = []
     }
 }

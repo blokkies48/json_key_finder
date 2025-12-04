@@ -15,6 +15,9 @@
   background: white;
   padding: 20px;
   border-radius: 10px;
+  width: 600px;       /* make wide */
+  max-width: 600px;   /* stay same size always */
+
 }
 .history-list {
   max-height: 60vh;
@@ -30,4 +33,28 @@
 }
 .history-item:hover {
   background: #eee;
+}
+
+.json-preview {
+  background: #1e1e1e;
+  color: #dcdcdc;
+  padding: 8px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+.history-item {
+  cursor: pointer;
+  margin-bottom: 10px;
+  list-style: none;
+}
+.history-item:hover .json-preview {
+  background: #2b2b2b;
+}
+.no-data {
+  text-align: center;
+  color: #888;
+  padding: 20px;
+  font-style: italic;
 }

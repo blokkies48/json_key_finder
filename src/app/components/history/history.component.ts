@@ -7,10 +7,12 @@ import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 })
 export class HistoryComponent implements OnInit {
 
-  @Output() closeMe = new EventEmitter();
+  @Output() close = new EventEmitter();
+  @Output() clearHis = new EventEmitter();
   @Output() selectItem = new EventEmitter<any>();
 
   savedList: any[] = []; // caveman store list
+  showConfirm = false;
 
   ngOnInit() {
     let saved = localStorage.getItem('savedJson');
@@ -30,11 +32,44 @@ export class HistoryComponent implements OnInit {
     const firstThree = entries.slice(0, 3)
       .map(([k, v]) => `${k}: ${v}`)
       .join(', ');
-    this.close()
     return entries.length > 3 ? firstThree + ', ...' : firstThree;
   }
 
-  close() {
-    this.closeMe.emit();
+  getJsonPreview(obj: any): string {
+    const tiny: any = {};
+    const keys = Object.keys(obj);
+
+    for (let i = 0; i < Math.min(3, keys.length); i++) {
+      tiny[keys[i]] = obj[keys[i]];
+    }
+
+    if (keys.length > 3) tiny["..."] = "...";
+
+    return JSON.stringify(tiny, null, 2); // pretty JSON
+  }
+
+
+  closeHistory() {
+    this.close.emit();
+  }
+
+  clearHistory() {
+    localStorage.removeItem('savedJson')
+    this.savedList = []
+    this.clearHis.emit()
+  }
+
+
+  tryClear() {
+    this.showConfirm = true;
+  }
+
+  confirmClear() {
+    this.showConfirm = false;
+    this.clearHistory()
+  }
+
+  cancelClear() {
+    this.showConfirm = false;
   }
 }
