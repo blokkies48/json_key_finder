@@ -183,6 +183,9 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
                         JSON.stringify(x) !== JSON.stringify(jsonData)
                     );
                 }
+                if (this.savedData.length > 50) {
+                    this.savedData = this.savedData.slice(0, 50)
+                }
                 this.savedData.unshift(jsonData)
                 localStorage.setItem('savedJson', JSON.stringify(this.savedData));
             } 
