@@ -13,6 +13,23 @@ export class HistoryComponent implements OnInit {
 
   savedList: any[] = []; // caveman store list
   showConfirm = false;
+  hoveredItem: any = null;
+  mouseX = 0;
+  mouseY = 0;
+
+  onMouseMove(event: MouseEvent, item: any) {
+    this.hoveredItem = item;
+    this.mouseX = event.clientX;
+    this.mouseY = event.clientY;
+  }
+
+  onMouseLeave() {
+    this.hoveredItem = null;
+  }
+
+  getFullJson(obj: any) {
+    return JSON.stringify(obj, null, 2);
+  }
 
   ngOnInit() {
     let saved = localStorage.getItem('savedJson');

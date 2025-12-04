@@ -58,3 +58,42 @@
   padding: 20px;
   font-style: italic;
 }
+.confirm-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.confirm-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+}
+
+.floating-hover {
+  position: fixed;
+  background: #2b2b2b;
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 12px;
+  z-index: 10000;
+  max-width: 500px;
+  max-height: 400px;
+  overflow: auto;
+  pointer-events: none; /* so mouse pass through */
+  white-space: pre-wrap;
+  top: 0;
+  left: 0;
+}
+
