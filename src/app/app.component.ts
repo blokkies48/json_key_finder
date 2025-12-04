@@ -172,11 +172,20 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
             
             const jsonData = JSON.parse(text);
             const savedJson = localStorage.getItem('savedJson');
-            if (savedJson) this.savedData = JSON.parse(savedJson)
-            this.savedData.unshift(jsonData)
+            if (savedJson) {
+                this.savedData = JSON.parse(savedJson)
+            } 
             this.output = JSON.stringify(jsonData, null, 2);
-
-            if (saveData) localStorage.setItem('savedJson', JSON.stringify(this.savedData));
+            
+            if (saveData) {
+                if (this.savedData.length > 1) {
+                    this.savedData = this.savedData.filter(x =>
+                        JSON.stringify(x) !== JSON.stringify(jsonData)
+                    );
+                }
+                this.savedData.unshift(jsonData)
+                localStorage.setItem('savedJson', JSON.stringify(this.savedData));
+            } 
             if (this.key) {
                 let filteredJson = this.getKeyValueDynamic(jsonData, this.key)
 
@@ -296,7 +305,7 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
           }
 
           this.editorInput?.setValue(JSON.stringify(data, null, 2));
-          this.processData()
+          this.processData(true)
           
         } catch (error) {
             this.isError = true;
@@ -366,13 +375,10 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
     loadJson(item: any) {
         this.showHistory = false
         this.editorInput?.setValue(JSON.stringify(item, null, 2));
-        console.log('saved data', this.savedData, item)
         const target = JSON.stringify(item);
-
         this.savedData = this.savedData.filter(x =>
             JSON.stringify(x) !== target
         );
-        console.log('saved data', this.savedData)
         localStorage.setItem('savedJson',  JSON.stringify(this.savedData))
         this.processData(true)
     }

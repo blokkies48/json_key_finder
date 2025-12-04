@@ -36,7 +36,6 @@ export class HistoryComponent implements OnInit {
     if (saved) {
       let parsed = JSON.parse(saved);
       this.savedList = parsed || [];
-      console.log("savedList", this.savedList)
     }
   }
 
