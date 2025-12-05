@@ -186,7 +186,12 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
                 if (this.savedData.length > 50) {
                     this.savedData = this.savedData.slice(0, 50)
                 }
-                this.savedData.unshift(jsonData)
+                try {
+                    this.savedData.unshift(jsonData)
+                } catch {
+                    localStorage.removeItem('savedJson')
+                    this.savedData.unshift(jsonData)
+                }
                 localStorage.setItem('savedJson', JSON.stringify(this.savedData));
             } 
             if (this.key) {
@@ -370,7 +375,12 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
         let input = JSON.parse(this.editorInput?.getValue())
         this.editorInput?.setValue(JSON.stringify(input, null, 2));
         if (this.savedData.length === 0) {
-            this.savedData.unshift(input)
+            try {
+                this.savedData.unshift(input)
+            } catch {
+                localStorage.removeItem('savedJson')
+                this.savedData.unshift(input)
+            }
         }
         localStorage.setItem('savedJson',  JSON.stringify(this.savedData))
     }
