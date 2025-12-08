@@ -178,7 +178,7 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
             this.output = JSON.stringify(jsonData, null, 2);
             
             if (saveData) {
-                if (this.savedData.length > 1) {
+                if (this.savedData.length > 0) {
                     this.savedData = this.savedData.filter(x =>
                         JSON.stringify(x) !== JSON.stringify(jsonData)
                     );
@@ -382,7 +382,6 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
                 this.savedData.unshift(input)
             }
         }
-        localStorage.setItem('savedJson',  JSON.stringify(this.savedData))
     }
 
     loadJson(item: any) {

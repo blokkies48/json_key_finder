@@ -32,3 +32,8 @@
     <button class="btn btn-secondary m-1" (click)="closeHistory()">Close</button>
   </div>
 </div>
+<div class="floating-hover" *ngIf="hoveredItem"
+     [style.top.px]="mouseY"
+     [style.left.px]="mouseX">
+  <pre>{{ getFullJson(hoveredItem) }}</pre>
+</div>
