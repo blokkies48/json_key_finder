@@ -1,42 +1,34 @@
-
-<div class="confirm-backdrop" *ngIf="showConfirm">
-  <div class="confirm-box">
+<!-- Confirm Modal -->
+<div class="confirm-backdrop" *ngIf="showConfirm" (click)="cancelClear()">
+  <div class="confirm-box" (click)="$event.stopPropagation()">
     <h4>Clear all?</h4>
     <p>You sure you want smash all history?</p>
-
     <button class="btn btn-danger m-1" (click)="confirmClear()">Yes</button>
     <button class="btn btn-secondary m-1" (click)="cancelClear()">No</button>
   </div>
 </div>
 
-<div class="popup-backdrop">
-  <div class="popup-box">
-  <h3>History</h3>
+<!-- History Modal -->
+<div class="popup-backdrop" (click)="closeHistory()">
+  <div class="popup-box" (click)="$event.stopPropagation()">
+    <h3>History</h3>
 
-<ul class="history-list" *ngIf="savedList.length > 0; else noDataBlock">
-    <li class="history-item"
-        *ngFor="let item of savedList"
-        (click)="pick(item)"
-        (mousemove)="onMouseMove($event, item)"
-        (mouseleave)="onMouseLeave()">
-    <pre class="json-preview">{{ getJsonPreview(item) }}</pre>
-    </li>
+    <ul class="history-list" *ngIf="savedList.length > 0; else noDataBlock">
+      <li class="history-item"
+          *ngFor="let item of savedList"
+          (click)="pick(item)"
+          (mousemove)="onMouseMove($event, item)"
+          (mouseleave)="onMouseLeave()">
+        <pre class="json-preview">{{ getJsonPreview(item) }}</pre>
+      </li>
+    </ul>
 
-</ul>
+    <ng-template #noDataBlock>
+      <p class="no-data">No data...</p>
+    </ng-template>
 
-<ng-template #noDataBlock>
-  <p class="no-data">No data...</p>
-</ng-template>
-
-<br>
+    <br>
     <button class="btn btn-warning m-1" (click)="tryClear()">Clear</button>
-  <button class="btn btn-secondary m-1" (click)="closeHistory()">Close</button>
+    <button class="btn btn-secondary m-1" (click)="closeHistory()">Close</button>
   </div>
-</div>
-
-
-<div class="floating-hover" *ngIf="hoveredItem"
-     [style.top.px]="mouseY"
-     [style.left.px]="mouseX">
-  <pre>{{ getFullJson(hoveredItem) }}</pre>
 </div>
