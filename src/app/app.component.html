@@ -1,49 +1,68 @@
-<div class="container-fluid min-vh-100 d-flex align-items-stretch bg-grey p-2">
-  <div class="row flex-grow-1 g-2 w-100">
+<div class="container-fluid" [class.dark-mode]="darkMode" [class.light-mode]="!darkMode">
+  <div class="resizable-container">
     <!-- JSON Input -->
-    <div class="col-lg-5 d-flex flex-column">
-      <div class="card shadow-sm border-0 flex-grow-1">
-      <div class="card-header bg-primary text-white fw-bold fs-5 py-2 d-flex align-items-center justify-content-between">
-
-        <!-- Left side -->
-      <button class="btn btn-light btn-sm" (click)="openHistory()">
-        History
-      </button>
-
-
-        <!-- Middle title -->
-        <span class="flex-grow-1 text-center">
-          JSON Input
-        </span>
-
-        <!-- Right side -->
-        <button class="btn btn-light btn-sm" (click)="formatJson()">
-          Format
-        </button>
-
-      </div>
-
+    <div class="resizable-column" [ngStyle]="{'flex-basis': columnWidths[0] + '%'}">
+      <div class="card">
+        <div class="card-header bg-primary d-flex align-items-center justify-content-between">
+          <button class="btn btn-light btn-sm" (click)="openHistory()">
+            History
+          </button>
+          <span class="flex-grow-1 text-center">
+            JSON Input
+          </span>
+          <div class="theme-control" title="Toggle light and dark mode">
+            <span class="mode-icon" aria-hidden="true">
+              <svg *ngIf="!darkMode" viewBox="0 0 24 24" class="mode-svg" role="img" aria-label="Light mode">
+                <circle cx="12" cy="12" r="4"></circle>
+                <line x1="12" y1="2" x2="12" y2="5"></line>
+                <line x1="12" y1="19" x2="12" y2="22"></line>
+                <line x1="4.93" y1="4.93" x2="7.05" y2="7.05"></line>
+                <line x1="16.95" y1="16.95" x2="19.07" y2="19.07"></line>
+                <line x1="2" y1="12" x2="5" y2="12"></line>
+                <line x1="19" y1="12" x2="22" y2="12"></line>
+                <line x1="4.93" y1="19.07" x2="7.05" y2="16.95"></line>
+                <line x1="16.95" y1="7.05" x2="19.07" y2="4.93"></line>
+              </svg>
+              <svg *ngIf="darkMode" viewBox="0 0 24 24" class="mode-svg" role="img" aria-label="Dark mode">
+                <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 1 0 9.8 9.8z"></path>
+              </svg>
+            </span>
+            <span class="mode-label">{{ darkMode ? 'Dark' : 'Light' }}</span>
+            <label class="theme-switch">
+              <input
+                type="checkbox"
+                [checked]="darkMode"
+                (change)="toggleDarkMode()"
+                aria-label="Toggle light and dark mode"
+              />
+              <span class="theme-slider"></span>
+            </label>
+          </div>
+        </div>
         <div class="card-body p-0 flex-grow-1">
           <div id="jsonEditor" class="border-0 rounded-bottom" style="height: calc(100vh - 110px);"></div>
         </div>
       </div>
     </div>
 
+    <!-- Resize Handle 1 -->
+    <div class="resize-handle" (mousedown)="startResize($event, 0)"></div>
+
     <!-- Middle Column -->
-    <div class="col-lg-2 d-flex flex-column">
-      <div class="card shadow-sm border-0 flex-grow-1">
-        <div class="card-header bg-dark text-white text-center fw-bold fs-5 py-2">
+    <div class="resizable-column" [ngStyle]="{'flex-basis': columnWidths[1] + '%'}">
+      <div class="card">
+        <div class="card-header bg-dark text-center">
           Search
         </div>
-        <div class="card-body p-2 text-center d-flex flex-column overflow-auto">
-          <h4>JSON key finder</h4>
-          <p>Filter and explore JSON data easily </p>
+        <div class="card-body p-3 text-center d-flex flex-column overflow-auto">
+          <h4>JSON Key Finder</h4>
+          <p>Filter and explore JSON data easily</p>
 
-          <button (click)="processData(true)" class="btn btn-primary fw-bold">Process</button>
+          <button (click)="processData(true)" class="btn btn-primary fw-bold mb-3">Process</button>
           <hr>
 
-          <label for="key" class="form-label fw-bold small mb-1">Enter Key</label>
-          <div class="input-group input-group-sm mb-2">
+          <label for="key" class="form-label fw-bold small mb-2">Enter Key</label>
+          <div class="input-group input-group-sm mb-3">
             <input
               type="text"
               id="key"
@@ -55,31 +74,33 @@
             <button class="btn btn-outline-secondary" type="button" (click)="key = ''" title="Clear">✕</button>
           </div>
 
-          <div class="scrollable-container border rounded p-1 mb-2 flex-grow-1 overflow-auto">
-            <div *ngFor="let key of availableKeys" class="text-start small">
+          <div class="scrollable-container border rounded p-2 mb-3 flex-grow-1 overflow-auto">
+            <div *ngFor="let key of availableKeys" class="text-start small mb-2">
               <label class="d-block">
                 <input type="checkbox" [checked]="true" [(ngModel)]="selectedKeys[key]" (change)="updateData()"> {{ key }}
               </label>
             </div>
           </div>
 
-          <div *ngIf="availableKeys.length > 0" class="d-grid gap-1 mb-2">
+          <div *ngIf="availableKeys.length > 0" class="d-grid gap-2 mb-3">
             <button (click)="selectAll()" class="btn btn-success btn-sm">Select All</button>
             <button (click)="deselectAll()" class="btn btn-outline-info btn-sm">Deselect All</button>
           </div>
 
-          <div class="d-grid gap-1 mt-auto">
+          <div class="d-grid gap-2 mt-auto">
             <button *ngIf="isError" (click)="fixStructure()" class="btn btn-outline-info btn-sm">Fix Structure</button>
           </div>
         </div>
-
       </div>
     </div>
 
+    <!-- Resize Handle 2 -->
+    <div class="resize-handle" (mousedown)="startResize($event, 1)"></div>
+
     <!-- Output -->
-    <div class="col-lg-5 d-flex flex-column">
-      <div class="card shadow-sm border-0 flex-grow-1">
-        <div class="card-header bg-success text-white text-center fw-bold fs-5 py-2">
+    <div class="resizable-column" [ngStyle]="{'flex-basis': columnWidths[2] + '%'}">
+      <div class="card">
+        <div class="card-header bg-success text-center">
           Output
         </div>
         <div class="card-body p-0 flex-grow-1">
@@ -90,5 +111,5 @@
   </div>
 </div>
 
-<app-history *ngIf="showHistory" (close)="closeHistory()" (clearHis)="clearHistory()" (selectItem)="loadJson($event)"></app-history>
+<app-history *ngIf="showHistory" [darkMode]="darkMode" (close)="closeHistory()" (clearHis)="clearHistory()" (selectItem)="loadJson($event)"></app-history>
 

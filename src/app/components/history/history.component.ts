@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-history',
@@ -6,6 +6,8 @@ import { Component, EventEmitter, Output, OnInit } from '@angular/core';
   styleUrls: ['./history.component.css']
 })
 export class HistoryComponent implements OnInit {
+
+  @Input() darkMode = false;
 
   @Output() close = new EventEmitter();
   @Output() clearHis = new EventEmitter();

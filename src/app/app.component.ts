@@ -3,7 +3,9 @@ import {
     Component,
     AfterViewInit,
     OnInit,
-    ChangeDetectorRef
+    ChangeDetectorRef,
+    HostListener,
+    NgZone
 } from '@angular/core';
 
 import dirtyJSON from 'dirty-json';
@@ -38,9 +40,24 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
     showHistory = false;
     savedData: any[] = []
 
-    constructor(private cd: ChangeDetectorRef) {}
+    // Resize functionality
+    columnWidths: number[] = [30, 20, 50];
+    isResizing: boolean = false;
+    resizeIndex: number = -1;
+    startX: number = 0;
+    startWidths: number[] = [];
+
+    // Dark mode
+    darkMode: boolean = false;
+
+    constructor(private cd: ChangeDetectorRef, private ngZone: NgZone) {}
 
     ngOnInit(): void {
+        // Load dark mode preference
+        const savedDarkMode = localStorage.getItem('darkMode');
+        this.darkMode = savedDarkMode ? JSON.parse(savedDarkMode) : false;
+        this.applyTheme();
+
         // Load early, before view/editor init
         const savedJson = localStorage.getItem('savedJson');
         const setKey = localStorage.getItem('setKey');
@@ -76,10 +93,11 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
         });
 
         monacoLoader(['vs/editor/editor.main'], (monacoInstance: any) => {
+            const theme = this.darkMode ? 'vs-dark' : 'vs';
             this.editorInput = monacoInstance.editor.create(document.getElementById('jsonEditor'), {
                 value: this.jsonInput, // Use loaded value
                 language: 'json',
-                theme: 'light',
+                theme: theme,
                 minimap: {
                     enabled: false
                 },
@@ -90,7 +108,7 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
                 value: '',
                 language: 'json',
                 readOnly: true,
-                theme: 'vs-light',
+                theme: theme,
                 minimap: {
                     enabled: false
                 },
@@ -406,5 +424,59 @@ export class AppComponent implements OnInit, AfterViewInit { // Add OnInit
     clearHistory() {
         this.editorOutput?.setValue('')
         this.savedData = []
+    }
+
+    toggleDarkMode(): void {
+        this.darkMode = !this.darkMode;
+        localStorage.setItem('darkMode', JSON.stringify(this.darkMode));
+        this.applyTheme();
+        
+        // Update Monaco editor theme
+        const monacoInstance = (window as any).monaco;
+        if (monacoInstance) {
+            const newTheme = this.darkMode ? 'vs-dark' : 'vs';
+            monacoInstance.editor.setTheme(newTheme);
+        }
+    }
+
+    private applyTheme(): void {
+        const root = document.documentElement;
+        if (this.darkMode) {
+            root.classList.add('dark-mode');
+        } else {
+            root.classList.remove('dark-mode');
+        }
+    }
+
+    startResize(event: MouseEvent, handleIndex: number): void {
+        event.preventDefault();
+        this.isResizing = true;
+        this.resizeIndex = handleIndex;
+        this.startX = event.clientX;
+        this.startWidths = [...this.columnWidths];
+
+        const handleMouseMove = (moveEvent: MouseEvent) => {
+            if (!this.isResizing) return;
+            const deltaX = moveEvent.clientX - this.startX;
+            const container = document.querySelector('.resizable-container') as HTMLElement;
+            const containerWidth = container ? container.offsetWidth : window.innerWidth - 40;
+            const percentChange = (deltaX / containerWidth) * 100;
+            const newWidths = [...this.startWidths];
+            newWidths[this.resizeIndex] += percentChange;
+            newWidths[this.resizeIndex + 1] -= percentChange;
+            const minWidth = 15;
+            if (newWidths[this.resizeIndex] >= minWidth && newWidths[this.resizeIndex + 1] >= minWidth) {
+                this.columnWidths = newWidths;
+            }
+        };
+
+        const handleMouseUp = () => {
+            this.isResizing = false;
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
     }
 }
